@@ -44,23 +44,35 @@ namespace STRSTeamsCheckIn
             }
             catch (Exception e)
             {
-                if (e.Message.Contains("Value could not be retrieved"))
+                if (!e.Message.Contains("Value could not be retrieved"))
                 {
-                    Console.WriteLine("TOKEN not found.");
-                    Console.WriteLine("Recreate .env file? (overwrites existing file)");
-                    Console.Write("(y/n): ");
+                    Console.WriteLine($"Error reading .env file: {e.Message}");
+                    return;
+                }
 
-                    var shouldCreateEnvFile = Console.ReadLine()?.ToLower() == "y";
+                Console.WriteLine("TOKEN not found in .env file.");
+                Console.WriteLine("Recreate .env file? (overwrites existing file)");
+                Console.Write("(y/n): ");
 
-                    if (shouldCreateEnvFile)
+                var input = Console.ReadLine()?.Trim().ToLower();
+
+                switch (input)
+                {
+                    case "y":
                         CreateEnvFile(envPath);
+                        Console.WriteLine("File created. Add your token and restart the application.");
+                        return;
+                    case "n":
+                        Console.WriteLine("File not created.");
+                        Console.WriteLine("Manually add TOKEN=your_token_here to .env and restart.");
+                        return;
+                    default:
+                        Console.WriteLine("Invalid input.");
+                        Console.WriteLine("File not created.");
+                        Console.WriteLine(
+                            "Manually add TOKEN=your_token_here to .env and restart OR run the program and select to re-create the file.");
+                        return;
                 }
-                else
-                {
-                    Console.WriteLine(e.Message);
-                }
-
-                return;
             }
 
 
