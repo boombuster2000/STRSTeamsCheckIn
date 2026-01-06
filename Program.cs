@@ -1,4 +1,5 @@
-﻿
+﻿using dotenv.net;
+
 namespace STRSTeamsCheckIn
 {
     internal static class Program
@@ -6,7 +7,7 @@ namespace STRSTeamsCheckIn
         private static void CreateEnvFile()
         {
             File.WriteAllText("./.env", "TOKEN=PASTE_YOUR_TOKEN");
-            Console.WriteLine("Created env file. Please add your token.");
+            Console.WriteLine("Created env file. Please add your token in ./.env.");
         }
         private static void Main()
         {
@@ -15,9 +16,14 @@ namespace STRSTeamsCheckIn
                 CreateEnvFile();
                 return;
             }
-            else if (File.ReadAllText("./.env") == "TOKEN=PASTE_YOUR_TOKEN")
+            
+            DotEnv.Load();
+            
+            var token = Environment.GetEnvironmentVariable("TOKEN");
+            
+            if (string.IsNullOrEmpty(token) || token == "PASTE_YOUR_TOKEN")
             {
-                Console.WriteLine("Token is still its default value. Please add your token.");
+                Console.WriteLine("Please add your token in ./.env.");
                 return;
             }
             
