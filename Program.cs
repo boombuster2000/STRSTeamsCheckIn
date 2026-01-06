@@ -1,4 +1,5 @@
 ﻿using dotenv.net;
+using dotenv.net.Utilities;
 
 namespace STRSTeamsCheckIn
 {
@@ -35,7 +36,27 @@ namespace STRSTeamsCheckIn
 
             DotEnv.Load(options: new DotEnvOptions(envFilePaths: [envPath]));
 
-            var token = Environment.GetEnvironmentVariable("TOKEN");
+            string token;
+
+            try
+            {
+                token = EnvReader.GetStringValue("TOKEN");
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("Value could not be retrieved"))
+                {
+                    Console.WriteLine("TOKEN could not be retrieved");
+                    CreateEnvFile(envPath);
+                }
+                else
+                {
+                    Console.WriteLine(e.Message);
+                }
+
+                return;
+            }
+
 
             if (string.IsNullOrEmpty(token) || token == "PASTE_YOUR_TOKEN")
             {
