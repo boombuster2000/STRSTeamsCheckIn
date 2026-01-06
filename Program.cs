@@ -24,17 +24,17 @@ namespace STRSTeamsCheckIn
             }
         }
 
-        private static void Main()
+        private static bool TryGetToken(string envFilePath, out string outToken)
         {
-            var envPath = Path.Combine(AppContext.BaseDirectory, ".env");
+            outToken = "";
 
-            if (!File.Exists(envPath))
+            if (!File.Exists(envFilePath))
             {
-                CreateEnvFile(envPath);
-                return;
+                CreateEnvFile(envFilePath);
+                return false;
             }
 
-            DotEnv.Load(options: new DotEnvOptions(envFilePaths: [envPath]));
+            DotEnv.Load(options: new DotEnvOptions(envFilePaths: [envFilePath]));
 
             if (!EnvReader.TryGetStringValue("TOKEN", out var token))
             {
@@ -47,27 +47,37 @@ namespace STRSTeamsCheckIn
                 switch (input)
                 {
                     case "y":
-                        CreateEnvFile(envPath);
-                        return;
+                        CreateEnvFile(envFilePath);
+                        return false;
                     case "n":
                         Console.WriteLine("File not created.");
                         Console.WriteLine(
                             "Manually add TOKEN=your_token_here to .env and restart OR run the program and select re-create the file.");
-                        return;
+                        return false;
                     default:
                         Console.WriteLine("Invalid input.");
                         Console.WriteLine("File not created.");
                         Console.WriteLine(
                             "Manually add TOKEN=your_token_here to .env and restart OR run the program and select re-create the file.");
-                        return;
+                        return false;
                 }
             }
 
             if (string.IsNullOrEmpty(token) || token == "PASTE_YOUR_TOKEN")
             {
-                Console.WriteLine($"Add your token in {envPath} and restart the program.");
-                return;
+                Console.WriteLine($"Add your token in {envFilePath} and restart the program.");
+                return false;
             }
+
+            outToken = token;
+            return true;
+        }
+
+        private static void Main()
+        {
+            string token;
+            if (!TryGetToken(Path.Combine(AppContext.BaseDirectory, ".env"), out token))
+                return;
         }
     }
 }
