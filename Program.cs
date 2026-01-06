@@ -15,7 +15,7 @@ namespace STRSTeamsCheckIn
                 if (!OperatingSystem.IsWindows())
                     File.SetUnixFileMode(envFilePath, UnixFileMode.UserRead | UnixFileMode.UserWrite);
 
-                Console.WriteLine($"Created env file. Add your token in {envFilePath}");
+                Console.WriteLine($"Created env file. Add your token in {envFilePath} and restart the program.");
             }
             catch (Exception ex)
             {
@@ -36,20 +36,8 @@ namespace STRSTeamsCheckIn
 
             DotEnv.Load(options: new DotEnvOptions(envFilePaths: [envPath]));
 
-            string token;
-
-            try
+            if (!EnvReader.TryGetStringValue("TOKEN", out var token))
             {
-                token = EnvReader.GetStringValue("TOKEN");
-            }
-            catch (Exception e)
-            {
-                if (!e.Message.Contains("Value could not be retrieved"))
-                {
-                    Console.WriteLine($"Error reading .env file: {e.Message}");
-                    return;
-                }
-
                 Console.WriteLine("TOKEN not found in .env file.");
                 Console.WriteLine("Recreate .env file? (overwrites existing file)");
                 Console.Write("(y/n): ");
@@ -60,25 +48,24 @@ namespace STRSTeamsCheckIn
                 {
                     case "y":
                         CreateEnvFile(envPath);
-                        Console.WriteLine("File created. Add your token and restart the application.");
                         return;
                     case "n":
                         Console.WriteLine("File not created.");
-                        Console.WriteLine("Manually add TOKEN=your_token_here to .env and restart.");
+                        Console.WriteLine(
+                            "Manually add TOKEN=your_token_here to .env and restart OR run the program and select re-create the file.");
                         return;
                     default:
                         Console.WriteLine("Invalid input.");
                         Console.WriteLine("File not created.");
                         Console.WriteLine(
-                            "Manually add TOKEN=your_token_here to .env and restart OR run the program and select to re-create the file.");
+                            "Manually add TOKEN=your_token_here to .env and restart OR run the program and select re-create the file.");
                         return;
                 }
             }
 
-
             if (string.IsNullOrEmpty(token) || token == "PASTE_YOUR_TOKEN")
             {
-                Console.WriteLine($"Add your token in {envPath}");
+                Console.WriteLine($"Add your token in {envPath} and restart the program.");
                 return;
             }
         }
