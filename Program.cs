@@ -46,8 +46,14 @@ namespace STRSTeamsCheckIn
             {
                 if (e.Message.Contains("Value could not be retrieved"))
                 {
-                    Console.WriteLine("TOKEN could not be retrieved");
-                    CreateEnvFile(envPath);
+                    Console.WriteLine("TOKEN not found.");
+                    Console.WriteLine("Recreate .env file? (overwrites existing file)");
+                    Console.Write("(y/n): ");
+
+                    var shouldCreateEnvFile = Console.ReadLine()?.ToLower() == "y";
+
+                    if (shouldCreateEnvFile)
+                        CreateEnvFile(envPath);
                 }
                 else
                 {
