@@ -27,20 +27,11 @@ namespace STRSTeamsCheckIn
         {
             var envPath = Path.Combine(AppContext.BaseDirectory, ".env");
 
-            try
+            if (!File.Exists(envPath))
             {
-                if (!File.Exists(envPath))
-                {
-                    CreateEnvFile(envPath);
-                    return;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error checking .env file: {ex.Message}");
+                CreateEnvFile(envPath);
                 return;
             }
-
 
             DotEnv.Load(options: new DotEnvOptions(envFilePaths: [envPath]));
 
