@@ -3,9 +3,16 @@ namespace STRSTeamsCheckIn
 {
     internal static class Program
     {
-        private static void Main(string[] args)
+        private static void CreateEnvFile()
         {
-            Console.WriteLine("Hello, World!");
+            File.WriteAllText("./.env", "TOKEN=YOUR_TOKEN");
+            Console.WriteLine("Created env file. Please add your token.");
+        }
+        private static void Main()
+        {
+            if (!File.Exists("./.env"))
+                CreateEnvFile();
+            
         }
     }
 }
