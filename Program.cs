@@ -4,26 +4,28 @@ namespace STRSTeamsCheckIn
 {
     internal static class Program
     {
-        private static void CreateEnvFile()
+        private static void CreateEnvFile(string envFilePath)
         {
-            File.WriteAllText("./.env", "TOKEN=PASTE_YOUR_TOKEN");
-            Console.WriteLine("Created env file. Please add your token in ./.env.");
+            File.WriteAllText(envFilePath, "TOKEN=PASTE_YOUR_TOKEN");
+            Console.WriteLine($"Created env file. Please add your token in {envFilePath}");
         }
         private static void Main()
         {
-            if (!File.Exists("./.env"))
+            var envPath = Path.Combine(AppContext.BaseDirectory, ".env");
+            
+            if (!File.Exists(envPath))
             {
-                CreateEnvFile();
+                CreateEnvFile(envPath);
                 return;
             }
             
-            DotEnv.Load();
+            DotEnv.Load(options: new DotEnvOptions(envFilePaths: [envPath]));
             
             var token = Environment.GetEnvironmentVariable("TOKEN");
             
             if (string.IsNullOrEmpty(token) || token == "PASTE_YOUR_TOKEN")
             {
-                Console.WriteLine("Please add your token in ./.env.");
+                Console.WriteLine($"Please add your token in {envPath}");
                 return;
             }
             
