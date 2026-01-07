@@ -45,6 +45,8 @@ namespace STRSTeamsCheckIn
 
                 var input = Console.ReadLine()?.Trim().ToLower();
 
+                const string manualGuidance =
+                    "Manually add TOKEN=your_token_here to .env and restart OR run the program and select re-create the file.";
                 switch (input)
                 {
                     case "y":
@@ -52,14 +54,12 @@ namespace STRSTeamsCheckIn
                         return false;
                     case "n":
                         Console.WriteLine("File not created.");
-                        Console.WriteLine(
-                            "Manually add TOKEN=your_token_here to .env and restart OR run the program and select re-create the file.");
+                        Console.WriteLine(manualGuidance);
                         return false;
                     default:
                         Console.WriteLine("Invalid input.");
                         Console.WriteLine("File not created.");
-                        Console.WriteLine(
-                            "Manually add TOKEN=your_token_here to .env and restart OR run the program and select re-create the file.");
+                        Console.WriteLine(manualGuidance);
                         return false;
                 }
             }
