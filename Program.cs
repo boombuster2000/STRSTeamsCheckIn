@@ -83,6 +83,12 @@ internal static class Program
 
     private static async Task Main()
     {
+        AnsiConsole.Write(new Rule($"[{AppColors.StrsYellow}]STRS Teams Check In[/]")
+        {
+            Style = Style.Parse(AppColors.StrsBlue),
+            Justification = Justify.Center,
+        });
+
         if (!TryGetToken(Path.Combine(AppContext.BaseDirectory, ".env"), out var token))
             return;
 
@@ -175,4 +181,13 @@ internal class TeamsClient : IDisposable
         _httpClient.Dispose();
         _disposed = true;
     }
+}
+
+public static class AppColors
+{
+    public const string StrsBlue = "#234A8C";
+    public const string StrsYellow = "#F7E039";
+    public const string StrsRed = "#E63B1E";
+    public const string Error = "#EF4444";
+    public const string Warning = "#E63B1E";
 }
