@@ -94,7 +94,10 @@ namespace STRSTeamsCheckIn
                     break;
             }
 
-            await client.CheckIn(location);
+            var responseObj = await client.CheckIn(location);
+            var content = responseObj.Response?.Content.ReadAsStringAsync().Result;
+
+            Console.WriteLine($"{content}");
         }
     }
 
