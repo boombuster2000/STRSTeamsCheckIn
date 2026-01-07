@@ -84,7 +84,7 @@ namespace STRSTeamsCheckIn
             if (!TryGetToken(Path.Combine(AppContext.BaseDirectory, ".env"), out var token))
                 return;
 
-            var client = new TeamsClient(token);
+            using var client = new TeamsClient(token);
 
             string location;
             while (true)
@@ -126,18 +126,22 @@ namespace STRSTeamsCheckIn
         }
     }
 
-    internal class TeamsClient
+    internal class TeamsClient : IDisposable
     {
         private readonly HttpClient _httpClient;
+        private bool _disposed;
 
         public TeamsClient(string token)
         {
             _httpClient = new HttpClient();
+            _disposed = false;
+
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Add("token", token);
         }
 
-        public async Task<(bool Success, HttpResponseMessage? Response, string? ErrorMessage)> CheckIn(string location)
+        public async Task<(bool Success, HttpResponseMessage? Response, string? ErrorMessage)> CheckIn(
+            string location)
         {
             const string baseUrl = "https://teamsapps.strschool.co.uk/api/touchreg/mobileCheckIn/";
             var locationCode = Convert.ToBase64String(Encoding.UTF8.GetBytes(location));
@@ -156,6 +160,14 @@ namespace STRSTeamsCheckIn
             {
                 return (false, null, "Request timed out");
             }
+        }
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+
+            _httpClient.Dispose();
+            _disposed = true;
         }
     }
 }
