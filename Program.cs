@@ -158,7 +158,7 @@ internal class TeamsClient : IDisposable
         }
         catch (OperationCanceledException)
         {
-            return (false, null, "Request timed out");
+            return (false, null, "Request timed out.");
         }
     }
 
