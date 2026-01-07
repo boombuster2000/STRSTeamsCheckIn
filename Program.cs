@@ -47,6 +47,7 @@ namespace STRSTeamsCheckIn
 
                 const string manualGuidance =
                     "Manually add TOKEN=your_token_here to .env and restart OR run the program and select re-create the file.";
+                
                 switch (input)
                 {
                     case "y":
