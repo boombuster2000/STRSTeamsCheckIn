@@ -73,7 +73,13 @@ internal static class Program
 
         if (string.IsNullOrEmpty(token) || token == "PASTE_YOUR_TOKEN")
         {
-            Console.WriteLine($"Add your token in {envFilePath} and restart the program.");
+            var panel = new Panel(
+                    $"[red]![/] [bold underline]Token required[/] [red]![/]\n\nPlease add your authentication token to:\n[cyan]{envFilePath}[/]")
+                .Header("Setup Required", Justify.Center)
+                .BorderColor(Color.Yellow)
+                .Padding(1, 1);
+
+            AnsiConsole.Write(panel);
             return false;
         }
 
@@ -83,7 +89,7 @@ internal static class Program
 
     private static async Task Main()
     {
-        AnsiConsole.Write(new Rule($"[{AppColors.StrsYellow}]STRS Teams Check In[/]")
+        AnsiConsole.Write(new Rule($"[{AppColors.StrsYellow} bold]STRS Teams Check In[/]")
         {
             Style = Style.Parse(AppColors.StrsBlue),
             Justification = Justify.Center,
