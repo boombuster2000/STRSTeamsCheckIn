@@ -80,6 +80,20 @@ internal static class Program
         return true;
     }
 
+    private static void WriteLineColoured(string text, ConsoleColor color)
+    {
+        Console.ForegroundColor = color;
+        Console.WriteLine(text);
+        Console.ResetColor();
+    }
+
+    private static void WriteColoured(string text, ConsoleColor color)
+    {
+        Console.ForegroundColor = color;
+        Console.WriteLine(text);
+        Console.ResetColor();
+    }
+
     private static async Task Main()
     {
         if (!TryGetToken(Path.Combine(AppContext.BaseDirectory, ".env"), out var token))
