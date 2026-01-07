@@ -5,7 +5,7 @@ namespace STRSTeamsCheckIn
 {
     internal static class Program
     {
-        private static void CreateEnvFile(string envFilePath)
+        private static bool TryCreateEnvFile(string envFilePath)
         {
             try
             {
@@ -16,11 +16,12 @@ namespace STRSTeamsCheckIn
                     File.SetUnixFileMode(envFilePath, UnixFileMode.UserRead | UnixFileMode.UserWrite);
 
                 Console.WriteLine($"Created env file. Add your token in {envFilePath} and restart the program.");
+                return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to create .env file: {ex.Message}");
-                throw;
+                return false;
             }
         }
 
@@ -30,7 +31,7 @@ namespace STRSTeamsCheckIn
 
             if (!File.Exists(envFilePath))
             {
-                CreateEnvFile(envFilePath);
+                TryCreateEnvFile(envFilePath);
                 return false;
             }
 
@@ -47,7 +48,7 @@ namespace STRSTeamsCheckIn
                 switch (input)
                 {
                     case "y":
-                        CreateEnvFile(envFilePath);
+                        TryCreateEnvFile(envFilePath);
                         return false;
                     case "n":
                         Console.WriteLine("File not created.");
