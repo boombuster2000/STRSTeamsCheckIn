@@ -74,7 +74,7 @@ internal static class Program
         if (string.IsNullOrEmpty(token) || token == "PASTE_YOUR_TOKEN")
         {
             var panel = new Panel(
-                    $"Add your token to:\n[cyan]{envFilePath}[/]")
+                    $"Add your token to: [cyan]{envFilePath}[/]")
                 .Header("Setup Required")
                 .BorderColor(Color.Yellow);
 
