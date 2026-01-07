@@ -77,17 +77,30 @@ namespace STRSTeamsCheckIn
             return true;
         }
 
-        private static void Main()
+        private static async Task Main()
         {
-            string token;
-            if (!TryGetToken(Path.Combine(AppContext.BaseDirectory, ".env"), out token))
+            if (!TryGetToken(Path.Combine(AppContext.BaseDirectory, ".env"), out var token))
                 return;
+
+            var client = new TeamsClient(token);
+
+            string location;
+            while (true)
+            {
+                Console.WriteLine("Where are you?: ");
+                location = Console.ReadLine() ?? string.Empty;
+
+                if (!string.IsNullOrWhiteSpace(location))
+                    break;
+            }
+
+            await client.CheckIn(location);
         }
     }
 
     internal class TeamsClient
     {
-        private HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
 
         public TeamsClient(string token)
         {
