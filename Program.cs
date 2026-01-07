@@ -1,4 +1,6 @@
-﻿using dotenv.net;
+﻿using System.Net.Http.Headers;
+using System.Text;
+using dotenv.net;
 using dotenv.net.Utilities;
 
 namespace STRSTeamsCheckIn
@@ -47,7 +49,7 @@ namespace STRSTeamsCheckIn
 
                 const string manualGuidance =
                     "Manually add TOKEN=your_token_here to .env and restart OR run the program and select re-create the file.";
-                
+
                 switch (input)
                 {
                     case "y":
@@ -80,6 +82,39 @@ namespace STRSTeamsCheckIn
             string token;
             if (!TryGetToken(Path.Combine(AppContext.BaseDirectory, ".env"), out token))
                 return;
+        }
+    }
+
+    internal class TeamsClient
+    {
+        private HttpClient _httpClient;
+
+        public TeamsClient(string token)
+        {
+            _httpClient = new HttpClient();
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Add("token", token);
+        }
+
+        public async Task<(bool Success, HttpResponseMessage? Response, string? ErrorMessage)> CheckIn(string location)
+        {
+            const string baseUrl = "https://teamsapps.strschool.co.uk/api/touchreg/mobileCheckIn/";
+            var locationCode = Convert.ToBase64String(Encoding.UTF8.GetBytes(location));
+            var url = baseUrl + locationCode;
+
+            try
+            {
+                var response = await _httpClient.PostAsync(url, null);
+                return (true, response, null);
+            }
+            catch (HttpRequestException)
+            {
+                return (false, null, "Network connectivity issue");
+            }
+            catch (OperationCanceledException)
+            {
+                return (false, null, "Request timed out");
+            }
         }
     }
 }
