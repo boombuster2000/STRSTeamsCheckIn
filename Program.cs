@@ -136,7 +136,6 @@ internal class TeamsClient : IDisposable
     public TeamsClient(string token)
     {
         _httpClient = new HttpClient();
-        _disposed = false;
 
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         _httpClient.Timeout = FromSeconds(30);
