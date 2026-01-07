@@ -120,7 +120,8 @@ internal static class Program
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var cleanValue = JsonSerializer.Deserialize<string>(content).Trim("\"");
+
+        var cleanValue = JsonSerializer.Deserialize<string>(content)?.Trim('"') ?? content;
 
         Console.WriteLine($"[Teams] - {cleanValue}");
     }
@@ -144,7 +145,10 @@ internal class TeamsClient : IDisposable
         string location)
     {
         const string baseUrl = "https://teamsapps.strschool.co.uk/api/touchreg/mobileCheckIn/";
-        var locationCode = Convert.ToBase64String(Encoding.UTF8.GetBytes(location));
+        var locationCode = Convert.ToBase64String(Encoding.UTF8.GetBytes(location))
+            .Replace('+', '-')
+            .Replace('/', '_'); // Make it URL safe.
+
         var url = baseUrl + locationCode;
 
         try
