@@ -8,7 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="dotenv.net" Version="4.0.0" />
+        <PackageReference Include="dotenv.net" Version="4.0.0"/>
+        <PackageReference Include="Spectre.Console" Version="0.54.1-alpha.0.26"/>
     </ItemGroup>
 
 </Project>

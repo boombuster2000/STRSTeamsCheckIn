@@ -5,6 +5,7 @@ using System.Text.Json;
 using dotenv.net;
 using dotenv.net.Utilities;
 using static System.TimeSpan;
+using Spectre.Console;
 
 namespace STRSTeamsCheckIn;
 
@@ -78,20 +79,6 @@ internal static class Program
 
         outToken = token;
         return true;
-    }
-
-    private static void WriteLineColoured(string text, ConsoleColor color)
-    {
-        Console.ForegroundColor = color;
-        Console.WriteLine(text);
-        Console.ResetColor();
-    }
-
-    private static void WriteColoured(string text, ConsoleColor color)
-    {
-        Console.ForegroundColor = color;
-        Console.WriteLine(text);
-        Console.ResetColor();
     }
 
     private static async Task Main()
