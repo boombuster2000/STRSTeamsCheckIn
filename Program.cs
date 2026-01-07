@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using dotenv.net;
 using dotenv.net.Utilities;
+using static System.TimeSpan;
 
 namespace STRSTeamsCheckIn;
 
@@ -138,6 +139,7 @@ internal class TeamsClient : IDisposable
         _disposed = false;
 
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        _httpClient.Timeout = FromSeconds(30);
         _httpClient.DefaultRequestHeaders.Add("token", token);
     }
 
