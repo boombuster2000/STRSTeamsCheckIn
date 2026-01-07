@@ -1,5 +1,7 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using dotenv.net;
 using dotenv.net.Utilities;
 
@@ -87,7 +89,7 @@ namespace STRSTeamsCheckIn
             string location;
             while (true)
             {
-                Console.WriteLine("Where are you?: ");
+                Console.Write("Where are you?: ");
                 location = Console.ReadLine() ?? string.Empty;
 
                 if (!string.IsNullOrWhiteSpace(location))
@@ -102,17 +104,25 @@ namespace STRSTeamsCheckIn
                 return;
             }
 
-            var content = response?.Content.ReadAsStringAsync().Result;
+            if (response == null)
+            {
+                Console.WriteLine("[Error] - response is null.");
+                return;
+            }
 
-            if (string.IsNullOrEmpty(content))
+            if (response.StatusCode == HttpStatusCode.NoContent)
             {
                 Console.WriteLine("Not Signed In.");
                 Console.WriteLine("Possible Reasons:");
                 Console.WriteLine("\t- Not on school wifi.");
                 Console.WriteLine("\t- Incorrect token.");
+                return;
             }
 
-            Console.WriteLine(content);
+            var content = await response.Content.ReadAsStringAsync();
+            var cleanValue = JsonSerializer.Deserialize<string>(content).Trim("\"");
+
+            Console.WriteLine($"[Teams] - {cleanValue}");
         }
     }
 
