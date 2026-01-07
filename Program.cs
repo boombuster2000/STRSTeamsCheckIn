@@ -94,10 +94,25 @@ namespace STRSTeamsCheckIn
                     break;
             }
 
-            var responseObj = await client.CheckIn(location);
-            var content = responseObj.Response?.Content.ReadAsStringAsync().Result;
+            var (success, response, errorMessage) = await client.CheckIn(location);
 
-            Console.WriteLine($"{content}");
+            if (!success)
+            {
+                Console.WriteLine($"[Error] - {errorMessage}");
+                return;
+            }
+
+            var content = response?.Content.ReadAsStringAsync().Result;
+
+            if (string.IsNullOrEmpty(content))
+            {
+                Console.WriteLine("Not Signed In.");
+                Console.WriteLine("Possible Reasons:");
+                Console.WriteLine("\t- Not on school wifi.");
+                Console.WriteLine("\t- Incorrect token.");
+            }
+
+            Console.WriteLine(content);
         }
     }
 
@@ -125,7 +140,7 @@ namespace STRSTeamsCheckIn
             }
             catch (HttpRequestException)
             {
-                return (false, null, "Network connectivity issue");
+                return (false, null, "Network connectivity issue.");
             }
             catch (OperationCanceledException)
             {
