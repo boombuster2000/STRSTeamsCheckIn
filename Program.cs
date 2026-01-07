@@ -5,169 +5,168 @@ using System.Text.Json;
 using dotenv.net;
 using dotenv.net.Utilities;
 
-namespace STRSTeamsCheckIn
+namespace STRSTeamsCheckIn;
+
+internal static class Program
 {
-    internal static class Program
+    private static bool TryCreateEnvFile(string envFilePath)
     {
-        private static bool TryCreateEnvFile(string envFilePath)
+        try
         {
-            try
-            {
-                File.WriteAllText(envFilePath, "TOKEN=PASTE_YOUR_TOKEN");
+            File.WriteAllText(envFilePath, "TOKEN=PASTE_YOUR_TOKEN");
 
-                // Set restrictive permissions on Unix-like systems
-                if (!OperatingSystem.IsWindows())
-                    File.SetUnixFileMode(envFilePath, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+            // Set restrictive permissions on Unix-like systems
+            if (!OperatingSystem.IsWindows())
+                File.SetUnixFileMode(envFilePath, UnixFileMode.UserRead | UnixFileMode.UserWrite);
 
-                Console.WriteLine($"Created env file. Add your token in {envFilePath} and restart the program.");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to create .env file: {ex.Message}");
-                return false;
-            }
-        }
-
-        private static bool TryGetToken(string envFilePath, out string outToken)
-        {
-            outToken = "";
-
-            if (!File.Exists(envFilePath))
-            {
-                TryCreateEnvFile(envFilePath);
-                return false;
-            }
-
-            DotEnv.Load(options: new DotEnvOptions(envFilePaths: [envFilePath]));
-
-            if (!EnvReader.TryGetStringValue("TOKEN", out var token))
-            {
-                Console.WriteLine("TOKEN not found in .env file.");
-                Console.WriteLine("Recreate .env file? (overwrites existing file)");
-                Console.Write("(y/n): ");
-
-                var input = Console.ReadLine()?.Trim().ToLower();
-
-                const string manualGuidance =
-                    "Manually add TOKEN=your_token_here to .env and restart OR run the program and select re-create the file.";
-
-                switch (input)
-                {
-                    case "y":
-                        TryCreateEnvFile(envFilePath);
-                        return false;
-                    case "n":
-                        Console.WriteLine("File not created.");
-                        Console.WriteLine(manualGuidance);
-                        return false;
-                    default:
-                        Console.WriteLine("Invalid input.");
-                        Console.WriteLine("File not created.");
-                        Console.WriteLine(manualGuidance);
-                        return false;
-                }
-            }
-
-            if (string.IsNullOrEmpty(token) || token == "PASTE_YOUR_TOKEN")
-            {
-                Console.WriteLine($"Add your token in {envFilePath} and restart the program.");
-                return false;
-            }
-
-            outToken = token;
+            Console.WriteLine($"Created env file. Add your token in {envFilePath} and restart the program.");
             return true;
         }
-
-        private static async Task Main()
+        catch (Exception ex)
         {
-            if (!TryGetToken(Path.Combine(AppContext.BaseDirectory, ".env"), out var token))
-                return;
-
-            using var client = new TeamsClient(token);
-
-            string location;
-            while (true)
-            {
-                Console.Write("Where are you?: ");
-                location = Console.ReadLine() ?? string.Empty;
-
-                if (!string.IsNullOrWhiteSpace(location))
-                    break;
-            }
-
-            var (success, response, errorMessage) = await client.CheckIn(location);
-
-            if (!success)
-            {
-                Console.WriteLine($"[Error] - {errorMessage}");
-                return;
-            }
-
-            if (response == null)
-            {
-                Console.WriteLine("[Error] - response is null.");
-                return;
-            }
-
-            if (response.StatusCode == HttpStatusCode.NoContent)
-            {
-                Console.WriteLine("Not Signed In.");
-                Console.WriteLine("Possible Reasons:");
-                Console.WriteLine("\t- Not on school wifi.");
-                Console.WriteLine("\t- Incorrect token.");
-                return;
-            }
-
-            var content = await response.Content.ReadAsStringAsync();
-            var cleanValue = JsonSerializer.Deserialize<string>(content).Trim("\"");
-
-            Console.WriteLine($"[Teams] - {cleanValue}");
+            Console.WriteLine($"Failed to create .env file: {ex.Message}");
+            return false;
         }
     }
 
-    internal class TeamsClient : IDisposable
+    private static bool TryGetToken(string envFilePath, out string outToken)
     {
-        private readonly HttpClient _httpClient;
-        private bool _disposed;
+        outToken = "";
 
-        public TeamsClient(string token)
+        if (!File.Exists(envFilePath))
         {
-            _httpClient = new HttpClient();
-            _disposed = false;
-
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.Add("token", token);
+            TryCreateEnvFile(envFilePath);
+            return false;
         }
 
-        public async Task<(bool Success, HttpResponseMessage? Response, string? ErrorMessage)> CheckIn(
-            string location)
-        {
-            const string baseUrl = "https://teamsapps.strschool.co.uk/api/touchreg/mobileCheckIn/";
-            var locationCode = Convert.ToBase64String(Encoding.UTF8.GetBytes(location));
-            var url = baseUrl + locationCode;
+        DotEnv.Load(options: new DotEnvOptions(envFilePaths: [envFilePath]));
 
-            try
+        if (!EnvReader.TryGetStringValue("TOKEN", out var token))
+        {
+            Console.WriteLine("TOKEN not found in .env file.");
+            Console.WriteLine("Recreate .env file? (overwrites existing file)");
+            Console.Write("(y/n): ");
+
+            var input = Console.ReadLine()?.Trim().ToLower();
+
+            const string manualGuidance =
+                "Manually add TOKEN=your_token_here to .env and restart OR run the program and select re-create the file.";
+
+            switch (input)
             {
-                var response = await _httpClient.PostAsync(url, null);
-                return (true, response, null);
-            }
-            catch (HttpRequestException)
-            {
-                return (false, null, "Network connectivity issue.");
-            }
-            catch (OperationCanceledException)
-            {
-                return (false, null, "Request timed out");
+                case "y":
+                    TryCreateEnvFile(envFilePath);
+                    return false;
+                case "n":
+                    Console.WriteLine("File not created.");
+                    Console.WriteLine(manualGuidance);
+                    return false;
+                default:
+                    Console.WriteLine("Invalid input.");
+                    Console.WriteLine("File not created.");
+                    Console.WriteLine(manualGuidance);
+                    return false;
             }
         }
 
-        public void Dispose()
+        if (string.IsNullOrEmpty(token) || token == "PASTE_YOUR_TOKEN")
         {
-            if (_disposed) return;
-
-            _httpClient.Dispose();
-            _disposed = true;
+            Console.WriteLine($"Add your token in {envFilePath} and restart the program.");
+            return false;
         }
+
+        outToken = token;
+        return true;
+    }
+
+    private static async Task Main()
+    {
+        if (!TryGetToken(Path.Combine(AppContext.BaseDirectory, ".env"), out var token))
+            return;
+
+        using var client = new TeamsClient(token);
+
+        string location;
+        while (true)
+        {
+            Console.Write("Where are you?: ");
+            location = Console.ReadLine() ?? string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(location))
+                break;
+        }
+
+        var (success, response, errorMessage) = await client.CheckIn(location);
+
+        if (!success)
+        {
+            Console.WriteLine($"[Error] - {errorMessage}");
+            return;
+        }
+
+        if (response == null)
+        {
+            Console.WriteLine("[Error] - response is null.");
+            return;
+        }
+
+        if (response.StatusCode == HttpStatusCode.NoContent)
+        {
+            Console.WriteLine("Not Signed In.");
+            Console.WriteLine("Possible Reasons:");
+            Console.WriteLine("\t- Not on school wifi.");
+            Console.WriteLine("\t- Incorrect token.");
+            return;
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var cleanValue = JsonSerializer.Deserialize<string>(content).Trim("\"");
+
+        Console.WriteLine($"[Teams] - {cleanValue}");
+    }
+}
+
+internal class TeamsClient : IDisposable
+{
+    private readonly HttpClient _httpClient;
+    private bool _disposed;
+
+    public TeamsClient(string token)
+    {
+        _httpClient = new HttpClient();
+        _disposed = false;
+
+        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        _httpClient.DefaultRequestHeaders.Add("token", token);
+    }
+
+    public async Task<(bool Success, HttpResponseMessage? Response, string? ErrorMessage)> CheckIn(
+        string location)
+    {
+        const string baseUrl = "https://teamsapps.strschool.co.uk/api/touchreg/mobileCheckIn/";
+        var locationCode = Convert.ToBase64String(Encoding.UTF8.GetBytes(location));
+        var url = baseUrl + locationCode;
+
+        try
+        {
+            var response = await _httpClient.PostAsync(url, null);
+            return (true, response, null);
+        }
+        catch (HttpRequestException)
+        {
+            return (false, null, "Network connectivity issue.");
+        }
+        catch (OperationCanceledException)
+        {
+            return (false, null, "Request timed out");
+        }
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+
+        _httpClient.Dispose();
+        _disposed = true;
     }
 }
