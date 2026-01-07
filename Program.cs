@@ -74,10 +74,9 @@ internal static class Program
         if (string.IsNullOrEmpty(token) || token == "PASTE_YOUR_TOKEN")
         {
             var panel = new Panel(
-                    $"[red]![/] [bold underline]Token required[/] [red]![/]\n\nPlease add your authentication token to:\n[cyan]{envFilePath}[/]")
-                .Header("Setup Required", Justify.Center)
-                .BorderColor(Color.Yellow)
-                .Padding(1, 1);
+                    $"Add your token to:\n[cyan]{envFilePath}[/]")
+                .Header("Setup Required")
+                .BorderColor(Color.Yellow);
 
             AnsiConsole.Write(panel);
             return false;
