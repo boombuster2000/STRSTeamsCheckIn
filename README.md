@@ -39,13 +39,13 @@ Simply run the executable:
 **Windows:**
 
 ```cmd
-strs-teams-checkin-vX.X.X-windows-x64.exe
+strs-teams-checkin-windows-x64.exe
 ```
 
 **macOS/Linux:**
 
 ```bash
-./strs-teams-checkin-vX.X.X-macos-arm64
+./strs-teams-checkin-macos-arm64
 ```
 
 When prompted, enter your location and press Enter. The program will check you in and display the response from Teams.
