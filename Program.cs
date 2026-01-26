@@ -82,7 +82,7 @@ internal static class Program
 
     private static async Task Main()
     {
-        if (!TryGetToken(Path.Combine(AppContext.BaseDirectory, ".env"), out var token))
+        if (!TryGetToken(Path.Combine(Path.GetDirectoryName(Environment.ProcessPath) ?? "./", ".env"), out var token))
             return;
 
         using var client = new TeamsClient(token);
