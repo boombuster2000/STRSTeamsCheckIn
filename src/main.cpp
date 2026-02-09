@@ -16,11 +16,26 @@
 
 std::filesystem::path GetTokenFilePath()
 {
+    std::filesystem::path configDir;
+
+#ifdef _WIN32
+    const char* appData = std::getenv("APPDATA");
+    if (!appData)
+        throw std::runtime_error("APPDATA environment variable not set");
+    configDir = std::filesystem::path(appData) / "teams-checkin";
+#elif __APPLE__
     const char* homeDir = std::getenv("HOME");
     if (!homeDir)
         throw std::runtime_error("HOME environment variable not set");
 
-    const std::filesystem::path configDir = std::filesystem::path(homeDir) / ".config" / "teams-checkin";
+    configDir = std::filesystem::path(homeDir) / "Library" / "Application Support" / "teams-checkin";
+#else
+    const char* homeDir = std::getenv("HOME");
+    if (!homeDir)
+        throw std::runtime_error("HOME environment variable not set");
+
+    configDir = std::filesystem::path(homeDir) / ".config" / "teams-checkin";
+#endif
 
     // Create config directory if it doesn't exist
     if (!std::filesystem::exists(configDir))
@@ -38,10 +53,13 @@ std::filesystem::path GetTokenFilePath()
 
         file.close();
 
-        // Set permissions to 600 (owner read/write only)
+#ifndef _WIN32
+        // Set permissions to 600 (owner read/write only) on Unix-like systems
+        // Windows uses a different permission model (ACLs), so skip this
         std::filesystem::permissions(tokenFilePath,
                                      std::filesystem::perms::owner_read | std::filesystem::perms::owner_write,
                                      std::filesystem::perm_options::replace);
+#endif
     }
 
     return tokenFilePath;
