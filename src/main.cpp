@@ -21,19 +21,39 @@ public:
     {
 #ifdef _WIN32
         hStdin = GetStdHandle(STD_INPUT_HANDLE);
-        GetConsoleMode(hStdin, &original_mode);
+        if (hStdin == INVALID_HANDLE_VALUE)
+            return;
+
+        if (!GetConsoleMode(hStdin, &original_mode))
+            return;
+
         DWORD new_mode = original_mode & ~ENABLE_ECHO_INPUT;
-        SetConsoleMode(hStdin, new_mode);
+        if (!SetConsoleMode(hStdin, new_mode))
+            return;
+
+        active = true;
 #else
-        tcgetattr(STDIN_FILENO, &original_settings);
+        if (!isatty(STDIN_FILENO))
+            return;
+
+        if (tcgetattr(STDIN_FILENO, &original_settings) != 0)
+            return;
+
         termios new_settings = original_settings;
         new_settings.c_lflag &= ~ECHO;
-        tcsetattr(STDIN_FILENO, TCSANOW, &new_settings);
+
+        if (tcsetattr(STDIN_FILENO, TCSANOW, &new_settings) != 0)
+            return;
+
+        active = true;
 #endif
     }
 
     ~EchoGuard()
     {
+        if (!active)
+            return;
+
 #ifdef _WIN32
         SetConsoleMode(hStdin, original_mode);
 #else
@@ -42,11 +62,13 @@ public:
     }
 
 private:
+    bool active{false};
+
 #ifdef _WIN32
-    HANDLE hStdin;
-    DWORD original_mode;
+    HANDLE hStdin{INVALID_HANDLE_VALUE};
+    DWORD original_mode{};
 #else
-    termios original_settings;
+    termios original_settings{};
 #endif
 };
 
@@ -120,7 +142,7 @@ std::string GetTokenFromUser()
     if (const char* envToken = std::getenv("TEAMS_TOKEN"); envToken && envToken[0] != '\0')
     {
         std::cout << "Using token from TEAMS_TOKEN environment variable." << std::endl;
-        return std::string(envToken);
+        return {envToken};
     }
 
     // Fall back to prompting user for input (with no echo)
