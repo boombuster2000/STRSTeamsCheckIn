@@ -19,10 +19,15 @@ std::filesystem::path GetTokenFilePath()
         std::filesystem::create_directories(configDir);
 
     // Creates token file if it doesn't exist
-    if (const std::filesystem::path tokenFilePath = std::filesystem::path(configDir) / "token";
-        !std::filesystem::exists(tokenFilePath))
+    const std::filesystem::path tokenFilePath = configDir / "token";
+
+    if (!std::filesystem::exists(tokenFilePath))
     {
         std::ofstream file(tokenFilePath);
+
+        if (!file)
+            throw std::runtime_error("Failed to create token file");
+
         file.close();
 
         // Set permissions to 600 (owner read/write only)
@@ -31,7 +36,7 @@ std::filesystem::path GetTokenFilePath()
                                      std::filesystem::perm_options::replace);
     }
 
-    return configDir / "token";
+    return tokenFilePath;
 }
 
 void SetToken(const std::string& token)
@@ -65,6 +70,13 @@ std::string GetToken()
     return token;
 }
 
+void PrintReasonsForEmptyBody()
+{
+    std::cout << "Make sure you are connected to school WiFi.\n";
+    std::cout << "Make sure your token is correct.\n";
+    std::cout << "Make sure your token hasn't expired (when password changes).\n";
+}
+
 int main(const int argc, char* argv[])
 {
     CLI::App app{"Teams Check-in CLI"};
@@ -85,10 +97,23 @@ int main(const int argc, char* argv[])
         {
             const std::string savedToken = GetToken();
             const TeamsClient client(savedToken);
-            auto [statusCode, responseBody] = client.CheckIn(location);
 
-            std::cout << "Status Code: " << statusCode << std::endl;
-            std::cout << "Response: " << responseBody << std::endl;
+            if (auto [statusCode, responseBody] = client.CheckIn(location); statusCode == 204)
+            {
+                std::cout << "Not signed in!\n";
+                PrintReasonsForEmptyBody();
+            }
+            else if (statusCode == 200)
+            {
+                std::cout << "Signed in!";
+                std::cout << "Status Code: " << statusCode << std::endl;
+                std::cout << "Response: " << responseBody << std::endl;
+            }
+            else
+            {
+                std::cout << "Status Code: " << statusCode << std::endl;
+                std::cout << "Response: " << responseBody << std::endl;
+            }
         }
         catch (const std::exception& e)
         {
