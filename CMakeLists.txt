@@ -20,7 +20,7 @@ include(FetchContent)
 FetchContent_Declare(
         CLI11
         GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
-        GIT_TAG v2.6.1
+        GIT_TAG bfffd37e1f804ca4fae1caae106935791696b6a9
 )
 FetchContent_MakeAvailable(CLI11)
 
