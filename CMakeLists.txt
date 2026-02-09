@@ -1,4 +1,3 @@
-# CMakeLists.txt
 cmake_minimum_required(VERSION 3.20)
 
 project(
@@ -24,6 +23,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(CLI11)
 
+FetchContent_Declare(
+        base64
+        GIT_REPOSITORY https://github.com/tobiaslocker/base64.git
+)
+FetchContent_MakeAvailable(base64)
+
 # Find the CURL package
 find_package(CURL REQUIRED)
 
@@ -48,4 +53,5 @@ target_link_libraries(
         PRIVATE
         CURL::libcurl
         CLI11
+        base64
 )
