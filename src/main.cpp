@@ -6,6 +6,14 @@
 #include "CLI/CLI.hpp"
 #include "TeamsClient.h"
 
+// Platform-specific includes for no-echo input
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <termios.h>
+#include <unistd.h>
+#endif
+
 std::filesystem::path GetTokenFilePath()
 {
     const char* homeDir = std::getenv("HOME");
@@ -37,6 +45,56 @@ std::filesystem::path GetTokenFilePath()
     }
 
     return tokenFilePath;
+}
+
+// Function to read password without echoing to terminal
+std::string ReadPasswordFromStdin()
+{
+#ifdef _WIN32
+    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD mode = 0;
+    GetConsoleMode(hStdin, &mode);
+    SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT));
+
+    std::string password;
+    std::getline(std::cin, password);
+
+    SetConsoleMode(hStdin, mode);
+    std::cout << std::endl;
+    return password;
+#else
+    termios oldt;
+    tcgetattr(STDIN_FILENO, &oldt);
+    termios newt = oldt;
+    newt.c_lflag &= ~ECHO;
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
+    std::string password;
+    std::getline(std::cin, password);
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    std::cout << std::endl;
+    return password;
+#endif
+}
+
+std::string GetTokenFromUser()
+{
+    // First, try to get token from environment variable
+    if (const char* envToken = std::getenv("TEAMS_TOKEN"); envToken && envToken[0] != '\0')
+    {
+        std::cout << "Using token from TEAMS_TOKEN environment variable." << std::endl;
+        return std::string(envToken);
+    }
+
+    // Fall back to prompting user for input (with no echo)
+    std::cout << "Enter your token (input hidden): ";
+    std::string token = ReadPasswordFromStdin();
+
+    if (token.empty())
+        throw std::runtime_error("Token cannot be empty");
+
+    return token;
 }
 
 void SetToken(const std::string& token)
@@ -82,13 +140,12 @@ int main(const int argc, char* argv[])
     CLI::App app{"Teams Check-in CLI"};
     argv = app.ensure_utf8(argv);
 
-    // SetToken subcommand
-    std::string token;
+    // SetToken subcommand (no positional argument)
     const auto setToken_cmd = app.add_subcommand("setToken", "Command used to add your token");
-    setToken_cmd->add_option("token", token, "The token for your teams account.")->required();
-    setToken_cmd->callback([&token]() {
+    setToken_cmd->callback([]() {
         try
         {
+            std::string token = GetTokenFromUser();
             SetToken(token);
         }
         catch (std::exception& e)
