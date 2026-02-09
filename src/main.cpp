@@ -86,7 +86,16 @@ int main(const int argc, char* argv[])
     std::string token;
     const auto setToken_cmd = app.add_subcommand("setToken", "Command used to add your token");
     setToken_cmd->add_option("token", token, "The token for your teams account.")->required();
-    setToken_cmd->callback([&token]() { SetToken(token); });
+    setToken_cmd->callback([&token]() {
+        try
+        {
+            SetToken(token);
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Error: " << e.what() << std::endl;
+        }
+    });
 
     // CheckIn subcommand
     std::string location;
