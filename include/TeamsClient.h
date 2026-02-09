@@ -1,13 +1,19 @@
 #pragma once
 #include <string>
 
+struct Response
+{
+    long statusCode;
+    std::string responseBody;
+};
+
 class TeamsClient
 {
 public:
     explicit TeamsClient(std::string token);
     ~TeamsClient() = default;
 
-    [[nodiscard]] bool CheckIn(const std::string& location) const;
+    [[nodiscard]] Response CheckIn(const std::string& location) const;
 
 private:
     static std::string ToBase64(const std::string& input);

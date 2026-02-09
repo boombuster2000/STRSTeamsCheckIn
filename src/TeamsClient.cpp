@@ -10,9 +10,8 @@ TeamsClient::TeamsClient(std::string token) : m_token(std::move(token))
 {
 }
 
-bool TeamsClient::CheckIn(const std::string& location) const
+Response TeamsClient::CheckIn(const std::string& location) const
 {
-
     const std::string baseUrl = "https://teamsapps.strschool.co.uk/api/touchreg/mobileCheckIn/";
     std::string locationCode = ToBase64(location);
 
@@ -21,10 +20,13 @@ bool TeamsClient::CheckIn(const std::string& location) const
 
     CURL* curl = curl_easy_init();
     if (!curl)
-        return false;
+        return {0, "Failed to initialize CURL library."};
 
     const std::string url = baseUrl + locationCode;
-    std::string response_body;
+
+    std::cout << url << std::endl;
+
+    std::string responseBody;
 
     curl_slist* headers = nullptr;
     headers = curl_slist_append(headers, "Content-Type: application/json");
@@ -37,27 +39,26 @@ bool TeamsClient::CheckIn(const std::string& location) const
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "");
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_body);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseBody);
 
-    CURLcode res = curl_easy_perform(curl);
-
-    if (res != CURLE_OK)
+    if (const CURLcode res = curl_easy_perform(curl); res != CURLE_OK)
     {
-        std::cerr << curl_easy_strerror(res) << "\n";
+        std::string errorMessage = "Network request failed: ";
+        errorMessage += curl_easy_strerror(res);
+
+        std::cerr << errorMessage << "\n";
         curl_slist_free_all(headers);
         curl_easy_cleanup(curl);
-        return false;
+        return {0, errorMessage};
     }
 
-    long status_code = 0;
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &status_code);
-
-    std::cout << "Status Code: " << status_code << "\n";
-    std::cout << "Message: " << response_body << "\n";
+    long statusCode = 0;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode);
 
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
-    return true;
+
+    return Response{statusCode, responseBody};
 }
 
 std::string TeamsClient::ToBase64(const std::string& input)
