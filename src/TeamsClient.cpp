@@ -26,9 +26,12 @@ Response TeamsClient::CheckIn(const std::string& location) const
     std::string responseBody;
 
     curl_slist* headers = nullptr;
+
+    const std::string tokenHeader = "token: " + m_token;
+
     headers = curl_slist_append(headers, "Content-Type: application/json");
     headers = curl_slist_append(headers, "Accept: application/json");
-    headers = curl_slist_append(headers, std::string("token: " + m_token).c_str());
+    headers = curl_slist_append(headers, tokenHeader.c_str());
 
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
