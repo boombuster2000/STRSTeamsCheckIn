@@ -6,6 +6,9 @@
 #include <iostream>
 #include <utility>
 
+#include "curl_wrappers/CurlHandle.h"
+#include "curl_wrappers/CurlHeaders.h"
+
 TeamsClient::TeamsClient(std::string token) : m_token(std::move(token))
 {
 }
@@ -18,48 +21,42 @@ Response TeamsClient::CheckIn(const std::string& location) const
     std::ranges::replace(locationCode, '+', '-');
     std::ranges::replace(locationCode, '/', '_');
 
-    CURL* curl = curl_easy_init();
+    const CurlHandle curl;
+
     if (!curl)
         return {0, "Failed to initialize CURL library."};
 
     const std::string url = baseUrl + locationCode;
     std::string responseBody;
 
-    curl_slist* headers = nullptr;
-
+    CurlHeaders headers;
     const std::string tokenHeader = "token: " + m_token;
 
-    headers = curl_slist_append(headers, "Content-Type: application/json");
-    headers = curl_slist_append(headers, "Accept: application/json");
-    headers = curl_slist_append(headers, tokenHeader.c_str());
+    headers.Append("Content-Type: application/json");
+    headers.Append("Accept: application/json");
+    headers.Append(tokenHeader.c_str());
 
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    curl_easy_setopt(curl, CURLOPT_POST, 1L);
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "");
+    curl_easy_setopt(curl.Get(), CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl.Get(), CURLOPT_HTTPHEADER, headers.Get());
+    curl_easy_setopt(curl.Get(), CURLOPT_POST, 1L);
+    curl_easy_setopt(curl.Get(), CURLOPT_POSTFIELDS, "");
 
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseBody);
+    curl_easy_setopt(curl.Get(), CURLOPT_WRITEFUNCTION, WriteCallback);
+    curl_easy_setopt(curl.Get(), CURLOPT_WRITEDATA, &responseBody);
 
-    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30L);
+    curl_easy_setopt(curl.Get(), CURLOPT_CONNECTTIMEOUT, 10L);
+    curl_easy_setopt(curl.Get(), CURLOPT_TIMEOUT, 30L);
 
-    if (const CURLcode res = curl_easy_perform(curl); res != CURLE_OK)
+    if (const CURLcode res = curl_easy_perform(curl.Get()); res != CURLE_OK)
     {
         std::string errorMessage = "Network request failed: ";
         errorMessage += curl_easy_strerror(res);
-
         std::cerr << errorMessage << "\n";
-        curl_slist_free_all(headers);
-        curl_easy_cleanup(curl);
         return {0, errorMessage};
     }
 
     long statusCode = 0;
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode);
-
-    curl_slist_free_all(headers);
-    curl_easy_cleanup(curl);
+    curl_easy_getinfo(curl.Get(), CURLINFO_RESPONSE_CODE, &statusCode);
 
     return Response{statusCode, responseBody};
 }
