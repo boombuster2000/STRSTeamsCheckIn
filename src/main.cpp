@@ -14,6 +14,42 @@
 #include <unistd.h>
 #endif
 
+class EchoGuard
+{
+public:
+    EchoGuard()
+    {
+#ifdef _WIN32
+        hStdin = GetStdHandle(STD_INPUT_HANDLE);
+        GetConsoleMode(hStdin, &original_mode);
+        DWORD new_mode = original_mode & ~ENABLE_ECHO_INPUT;
+        SetConsoleMode(hStdin, new_mode);
+#else
+        tcgetattr(STDIN_FILENO, &original_settings);
+        termios new_settings = original_settings;
+        new_settings.c_lflag &= ~ECHO;
+        tcsetattr(STDIN_FILENO, TCSANOW, &new_settings);
+#endif
+    }
+
+    ~EchoGuard()
+    {
+#ifdef _WIN32
+        SetConsoleMode(hStdin, original_mode);
+#else
+        tcsetattr(STDIN_FILENO, TCSANOW, &original_settings);
+#endif
+    }
+
+private:
+#ifdef _WIN32
+    HANDLE hStdin;
+    DWORD original_mode;
+#else
+    termios original_settings;
+#endif
+};
+
 std::filesystem::path GetTokenFilePath()
 {
     std::filesystem::path configDir;
@@ -65,35 +101,17 @@ std::filesystem::path GetTokenFilePath()
     return tokenFilePath;
 }
 
-// Function to read password without echoing to terminal
 std::string ReadPasswordFromStdin()
 {
-#ifdef _WIN32
-    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
-    DWORD mode = 0;
-    GetConsoleMode(hStdin, &mode);
-    SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT));
-
     std::string password;
-    std::getline(std::cin, password);
+    {
+        EchoGuard guard;
+        if (!std::getline(std::cin, password))
+            throw std::runtime_error("Failed to read input");
+    }
 
-    SetConsoleMode(hStdin, mode);
-    std::cout << std::endl;
+    std::cout << std::endl; // Move to a new line since Enter wasn't echoed
     return password;
-#else
-    termios oldt;
-    tcgetattr(STDIN_FILENO, &oldt);
-    termios newt = oldt;
-    newt.c_lflag &= ~ECHO;
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-
-    std::string password;
-    std::getline(std::cin, password);
-
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    std::cout << std::endl;
-    return password;
-#endif
 }
 
 std::string GetTokenFromUser()
