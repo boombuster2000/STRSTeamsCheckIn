@@ -8,7 +8,7 @@ BIN_PATH="$INSTALL_DIR/$BIN_NAME"
 
 # ---------- helpers ----------
 error() {
-  echo "❌ Error: $1" >&2
+  echo "Error: $1" >&2
   exit 1
 }
 

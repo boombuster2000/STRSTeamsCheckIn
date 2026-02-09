@@ -8,7 +8,7 @@ INSTALL_DIR="/usr/local/bin"
 
 # ---------- helpers ----------
 error() {
-  echo "❌ Error: $1" >&2
+  echo "Error: $1" >&2
   exit 1
 }
 

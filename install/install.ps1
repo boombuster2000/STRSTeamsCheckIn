@@ -8,7 +8,7 @@ $InstallDir = "$Env:ProgramFiles\STRSTeamsCheckIn"
 $BinTarget  = Join-Path $InstallDir $BinName
 
 function Fail($msg) {
-    Write-Error "❌ $msg"
+    Write-Error "$msg"
     exit 1
 }
 
