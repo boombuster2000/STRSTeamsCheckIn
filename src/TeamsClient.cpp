@@ -23,9 +23,6 @@ Response TeamsClient::CheckIn(const std::string& location) const
         return {0, "Failed to initialize CURL library."};
 
     const std::string url = baseUrl + locationCode;
-
-    std::cout << url << std::endl;
-
     std::string responseBody;
 
     curl_slist* headers = nullptr;
