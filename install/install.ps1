@@ -8,7 +8,7 @@ $InstallDir = "$Env:ProgramFiles\STRSTeamsCheckIn"
 $BinTarget  = Join-Path $InstallDir $BinName
 
 function Fail($msg) {
-    Write-Error "$msg"
+    [Console]::Error.WriteLine("Error: $msg")
     exit 1
 }
 
@@ -39,11 +39,12 @@ Copy-Item $BinSource $BinTarget -Force
 
 # ---------- PATH update ----------
 $oldPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
-if ($oldPath -notlike "*$InstallDir*") {
+$pathEntries = $oldPath -split ';' | Where-Object { $_ -ne '' }
+if ($InstallDir -notin $pathEntries) {
     Info "Adding to system PATH"
     [Environment]::SetEnvironmentVariable(
             "Path",
-            "$oldPath;$InstallDir",
+            (($pathEntries + $InstallDir) -join ';'),
             "Machine"
     )
 }

@@ -32,7 +32,7 @@ fi
 
 # ---------- ownership / conflict checks ----------
 RESOLVED_PATH="$(command -v "$BIN_NAME" || true)"
-if [[ "$RESOLVED_PATH" != "$BIN_PATH" ]]; then
+if [[ -n "$RESOLVED_PATH" && "$RESOLVED_PATH" != "$BIN_PATH" ]]; then
   error "'$BIN_NAME' resolves to $RESOLVED_PATH (not managed by this installer)"
 fi
 
