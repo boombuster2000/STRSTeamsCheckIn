@@ -38,6 +38,9 @@ Response TeamsClient::CheckIn(const std::string& location) const
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseBody);
 
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30L);
+
     if (const CURLcode res = curl_easy_perform(curl); res != CURLE_OK)
     {
         std::string errorMessage = "Network request failed: ";
