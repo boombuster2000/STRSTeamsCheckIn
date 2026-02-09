@@ -112,12 +112,6 @@ int main(const int argc, char* argv[])
                 std::cout << "Not signed in!\n";
                 PrintReasonsForEmptyBody();
             }
-            else if (statusCode == 200)
-            {
-                std::cout << "Signed in!";
-                std::cout << "Status Code: " << statusCode << std::endl;
-                std::cout << "Response: " << responseBody << std::endl;
-            }
             else
             {
                 std::cout << "Status Code: " << statusCode << std::endl;
