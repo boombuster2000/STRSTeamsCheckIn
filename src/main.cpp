@@ -208,12 +208,11 @@ int main(const int argc, char* argv[])
     CLI::App app{"Teams Check-in CLI"};
     argv = app.ensure_utf8(argv);
 
-    // SetToken subcommand (no positional argument)
     const auto setToken_cmd = app.add_subcommand("setToken", "Command used to add your token");
     setToken_cmd->callback([]() {
         try
         {
-            std::string token = GetTokenFromUser();
+            const std::string token = GetTokenFromUser();
             SetToken(token);
         }
         catch (std::exception& e)
