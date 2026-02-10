@@ -61,6 +61,8 @@ public:
 #endif
     }
 
+    [[nodiscard]] bool IsActive() const { return active; }
+
     EchoGuard(const EchoGuard&) = delete;
     EchoGuard& operator=(const EchoGuard&) = delete;
     EchoGuard(EchoGuard&&) = delete;
@@ -132,7 +134,10 @@ std::string ReadPasswordFromStdin()
 {
     std::string password;
     {
-        EchoGuard guard;
+        if (const EchoGuard guard; !guard.IsActive())
+            std::cerr << "Warning: Unable to hide input. Your token will be visible on screen." << std::endl;
+
+
         if (!std::getline(std::cin, password))
             throw std::runtime_error("Failed to read input");
     }
