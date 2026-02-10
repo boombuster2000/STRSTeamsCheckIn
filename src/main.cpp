@@ -134,7 +134,8 @@ std::string ReadPasswordFromStdin()
 {
     std::string password;
     {
-        if (const EchoGuard guard; !guard.IsActive())
+        const EchoGuard guard; // Must be destroyed after input is taken! (done automatically at end of scope)
+        if (!guard.IsActive())
             std::cerr << "Warning: Unable to hide input. Your token will be visible on screen." << std::endl;
 
 
@@ -143,6 +144,7 @@ std::string ReadPasswordFromStdin()
     }
 
     std::cout << std::endl; // Move to a new line since Enter wasn't echoed
+
     return password;
 }
 
