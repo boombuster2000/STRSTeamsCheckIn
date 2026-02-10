@@ -1,80 +1,151 @@
-﻿# STRS Teams Check-In
+﻿# STRSTeamsCheckIn
 
-A cross-platform command-line tool for checking into STRS Teams locations.
+A command-line tool for Microsoft Teams check-in automation.
 
-## Features
+---
+## Prerequisites
 
-- Simple command-line interface
-- Secure token storage in `.env` file
-- Cross-platform support (Windows, macOS, Linux)
-- Automatic `.env` file creation with proper permissions
+### All Platforms
+- CMake 3.20 or higher
+- C++20-compatible compiler
+- Git
+- Internet connection (for downloading dependencies)
+
+**Note:** All dependencies (CLI11, base64, CPR/libcurl) are automatically downloaded by CMake during the build process.
+**Note:** School Wi-Fi may block the downloads for these dependencies.
+
+
+### Platform-Specific Requirements
+
+#### Linux
+```bash
+# Debian/Ubuntu
+sudo apt-get install build-essential cmake git
+
+# Fedora/RHEL
+sudo dnf install gcc-c++ cmake git
+
+# Arch Linux
+sudo pacman -S base-devel cmake git
+```
+
+#### macOS
+```bash
+# Install Xcode Command Line Tools
+xcode-select --install
+
+# Install CMake (using Homebrew)
+brew install cmake
+```
+
+#### Windows
+- Visual Studio 2019 or later (with C++ desktop development workload)
+- CMake
+- Git for Windows
+---
+## Building
+
+### Linux/macOS
+
+```bash
+# Clone the repository
+git clone https://github.com/boombuster2000/STRSTeamsCheckIn.git
+cd STRSTeamsCheckIn
+
+# Configure the build
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+# Build
+cmake --build build
+
+# The executable will be at: build/checkin
+```
+
+### Windows (Visual Studio)
+
+```powershell
+# Clone the repository
+git clone https://github.com/boombuster2000/STRSTeamsCheckIn.git
+cd STRSTeamsCheckIn
+
+# Configure the build
+cmake -B build
+
+# Build
+cmake --build build --config Release
+
+# The executable will be at: build\Release\checkin.exe
+```
+---
 
 ## Installation
 
-1. Download the appropriate version for your operating system from the [Releases](../../releases) page.
+### System-Wide Installation (requires admin/sudo)
 
-2. **macOS/Linux only**: Make the file executable
-
+#### Linux/macOS
 ```bash
-   chmod +x strs-teams-checkin-*
+sudo cmake --install build --prefix /usr/local
 ```
 
-## First-Time Setup
+This installs `checkin` to `/usr/local/bin/checkin`
 
-1. Run the program for the first time. It will automatically create a `.env` file in the same directory as the
-   executable.
+#### Windows (as Administrator)
+```powershell
+cmake --install build --prefix "C:\Program Files\STRSTeamsCheckIn"
+```
 
-2. Open the `.env` file and replace `PASTE_YOUR_TOKEN` with your actual Teams token:
-   **Example:**
-    ```
-       TOKEN=123abc-456def-gfgs
-    ```
+Add `C:\Program Files\STRSTeamsCheckIn\bin` to your PATH to use `checkin` from anywhere.
 
-3. Run the program again.
+### User-Local Installation (no admin required)
 
+#### Linux/macOS
+```bash
+cmake --install build --prefix ~/.local
+```
+
+Make sure `~/.local/bin` is in your PATH:
+```bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+#### Windows
+```powershell
+cmake --install build --prefix "$env:USERPROFILE\AppData\Local\Programs\STRSTeamsCheckIn"
+```
+
+Add to your user PATH:
+1. Open "Edit environment variables for your account"
+2. Add `%USERPROFILE%\AppData\Local\Programs\STRSTeamsCheckIn\bin` to PATH
+
+### Custom Location
+```bash
+cmake --install build --prefix /path/to/custom/location
+```
+---
 ## Usage
 
-Simply run the executable:
-
-**Windows:**
-
-```cmd
-strs-teams-checkin-windows-x64.exe
-```
-
-**macOS/Linux:**
-
+After installation, run:
 ```bash
-./strs-teams-checkin-macos-arm64
+checkin --help
+```
+---
+## Uninstalling
+
+If you kept track of the install prefix:
+```bash
+# Linux/macOS
+sudo rm /usr/local/bin/checkin
+
+# Windows
+del "C:\Program Files\STRSTeamsCheckIn\bin\checkin.exe"
 ```
 
-When prompted, enter your location and press Enter. The program will check you in and display the response from Teams.
+Or use CMake's install manifest:
+```bash
+cat build/install_manifest.txt | sudo xargs rm
+```
+---
+## Disclaimer
 
-## Troubleshooting
-
-### "Not Signed In" Error
-
-If you receive a "Not Signed In" message, check the following:
-
-- You are connected to the school Wi-Fi network
-- Your token in the `.env` file is correct and up-to-date
-- The token hasn't expired
-
-### macOS Security Warning
-
-If macOS prevents you from opening the app with a message about an unidentified developer:
-
-1. Right-click (or Control-click) on the file
-2. Select "Open" from the menu
-3. Click "Open" in the dialog that appears
-
-Alternatively, you can authorize it in System Settings > Privacy & Security.
-
-## Security Note
-
-Your token is stored locally in the `.env` file. Keep this file secure and do not share it with others. On Unix-like
-systems (macOS/Linux), the file is automatically created with restricted permissions (readable/writable only by you).
-
-## Support
-
-For issues or questions, please [open an issue](../../issues) on GitHub.
+This project and its contents are not affiliated with, funded, authorized, endorsed by, or in any way associated with Sir Thomas Rich's School, Microsoft, or any of its affiliates and subsidiaries.
