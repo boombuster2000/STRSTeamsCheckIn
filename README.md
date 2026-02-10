@@ -2,7 +2,6 @@
 
 A command-line tool for Microsoft Teams check-in automation.
 
----
 ## Prerequisites
 
 ### All Platforms
@@ -42,7 +41,7 @@ brew install cmake
 - Visual Studio 2019 or later (with C++ desktop development workload)
 - CMake
 - Git for Windows
----
+
 ## Building
 
 ### Linux/macOS
@@ -76,7 +75,6 @@ cmake --build build --config Release
 
 # The executable will be at: build\Release\checkin.exe
 ```
----
 
 ## Installation
 
@@ -122,14 +120,13 @@ Add to your user PATH:
 ```bash
 cmake --install build --prefix /path/to/custom/location
 ```
----
 ## Usage
 
 After installation, run:
 ```bash
 checkin --help
 ```
----
+
 ## Uninstalling
 
 If you kept track of the install prefix:
@@ -145,7 +142,7 @@ Or use CMake's install manifest:
 ```bash
 cat build/install_manifest.txt | sudo xargs rm
 ```
----
+
 ## Disclaimer
 
 This project and its contents are not affiliated with, funded, authorized, endorsed by, or in any way associated with Sir Thomas Rich's School, Microsoft, or any of its affiliates and subsidiaries.
