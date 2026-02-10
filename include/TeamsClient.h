@@ -16,8 +16,5 @@ public:
     [[nodiscard]] Response CheckIn(const std::string& location) const;
 
 private:
-    static size_t WriteCallback(void* data, size_t elementSize, size_t elementCount, void* userContext);
-
-private:
     std::string m_token;
 };

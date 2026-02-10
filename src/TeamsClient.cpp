@@ -43,11 +43,3 @@ Response TeamsClient::CheckIn(const std::string& location) const
 
     return Response{response.status_code, response.text};
 }
-
-size_t TeamsClient::WriteCallback(void* data, const size_t elementSize, const size_t elementCount, void* userContext)
-{
-    const size_t totalSize = elementSize * elementCount;
-    auto* response = static_cast<std::string*>(userContext);
-    response->append(static_cast<char*>(data), totalSize);
-    return totalSize;
-}
