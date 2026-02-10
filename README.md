@@ -33,8 +33,7 @@ Make sure `STRSTeamsCheckIn` exists in the current directory.
 
 #### 2. Run installer
 ```bash
-cd install
-chmod +x install.sh
+chmod +x ./install/install.sh
 ./install.sh
 ```
 
@@ -45,9 +44,8 @@ chmod +x install.sh
 
 #### Uninstall
 ```bash
-cd install
-chmod +x uninstall.sh
-./uninstall.sh
+chmod +x ./install/uninstall.sh
+./install/uninstall.sh
 ```
 ### Windows
 
@@ -57,7 +55,7 @@ Ensure STRSTeamsCheckIn.exe is present in the directory.
 
 #### 2. Run installer (Administrator)
 ```powershell
-powershell -ExecutionPolicy Bypass -File install.ps1
+powershell -ExecutionPolicy Bypass -File ./install/install.ps1
 ```
 - Installs to: `C:\Program Files\STRSTeamsCheckIn\checkin.exe`
 - Automatically adds to system PATH
@@ -66,7 +64,7 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 
 #### Uninstall
 ```powershell
-powershell -ExecutionPolicy Bypass -File uninstall.ps1
+powershell -ExecutionPolicy Bypass -File ./install/uninstall.ps1
 ```
 
 ## Verifying Installation
