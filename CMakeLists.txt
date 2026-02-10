@@ -29,7 +29,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(base64)
 
-include(FetchContent)
 FetchContent_Declare(cpr
         GIT_REPOSITORY https://github.com/libcpr/cpr.git
         GIT_TAG c492b4fed1fd7288eacec6fe8d89e37df78d373a
