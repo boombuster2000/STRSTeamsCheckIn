@@ -132,9 +132,11 @@ std::filesystem::path GetTokenFilePath()
 
 std::string ReadPasswordFromStdin()
 {
+    const EchoGuard guard; // Must be destroyed after input is taken! (done automatically at end of scope)
+
     std::string password;
     {
-        const EchoGuard guard; // Must be destroyed after input is taken! (done automatically at end of scope)
+
         if (!guard.IsActive())
             std::cerr << "Warning: Unable to hide input. Your token will be visible on screen." << std::endl;
 
@@ -143,7 +145,8 @@ std::string ReadPasswordFromStdin()
             throw std::runtime_error("Failed to read input");
     }
 
-    std::cout << std::endl; // Move to a new line since Enter wasn't echoed
+    if (guard.IsActive())
+        std::cout << std::endl; // Move to a new line since Enter wasn't echoed
 
     return password;
 }
