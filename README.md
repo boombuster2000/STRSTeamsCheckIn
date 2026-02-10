@@ -7,7 +7,7 @@ A command-line tool for Microsoft Teams check-in automation.
 
 ### All Platforms
 - CMake 3.20 or higher
-- C++20 compatible compiler
+- C++20-compatible compiler
 - Git
 - Internet connection (for downloading dependencies)
 
