@@ -41,6 +41,8 @@ add_executable(
         include/curl_wrappers/CurlHeaders.h
 )
 
+set_target_properties(STRSTeamsCheckIn PROPERTIES OUTPUT_NAME checkin)
+
 target_include_directories(
         STRSTeamsCheckIn
         PRIVATE
@@ -54,4 +56,9 @@ target_link_libraries(
         CURL::libcurl
         CLI11
         base64
+)
+
+install(
+        TARGETS STRSTeamsCheckIn
+        RUNTIME DESTINATION bin
 )
