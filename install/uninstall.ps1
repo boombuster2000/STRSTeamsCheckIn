@@ -7,7 +7,7 @@ $InstallDir = "$Env:ProgramFiles\STRSTeamsCheckIn"
 $BinTarget  = Join-Path $InstallDir $BinName
 
 function Fail($msg) {
-    Write-Error "$msg"
+    [Console]::Error.WriteLine("Error: $msg")
     exit 1
 }
 
@@ -41,7 +41,7 @@ if (Test-Path $InstallDir) {
 
 # ---------- PATH cleanup ----------
 $oldPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
-$newPath = ($oldPath -split ';' | Where-Object { $_ -ne $InstallDir }) -join ';'
+$newPath = ($oldPath -split ';' | Where-Object { $_ -ne '' -and $_ -ne $InstallDir }) -join ';'
 [Environment]::SetEnvironmentVariable("Path", $newPath, "Machine")
 
 # ---------- verification ----------

@@ -61,6 +61,11 @@ public:
 #endif
     }
 
+    EchoGuard(const EchoGuard&) = delete;
+    EchoGuard& operator=(const EchoGuard&) = delete;
+    EchoGuard(EchoGuard&&) = delete;
+    EchoGuard& operator=(EchoGuard&&) = delete;
+
 private:
     bool active{false};
 

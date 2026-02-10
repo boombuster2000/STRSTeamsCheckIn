@@ -16,11 +16,11 @@ authentication token.
 ---
 ## Supported Platforms
 
-| OS | Supported | Install Method |
-|----|----------|----------------|
-| Windows | ✅ | PowerShell installer |
-| macOS | ✅ | Bash install script |
-| Linux | ✅ | Bash install script |
+| OS      | Supported | Install Method       |
+|---------|-----------|----------------------|
+| Windows | ✅         | PowerShell installer |
+| macOS   | ✅         | Bash install script  |
+| Linux   | ✅         | Bash install script  |
 
 ---
 
@@ -33,6 +33,7 @@ Make sure `STRSTeamsCheckIn` exists in the current directory.
 
 #### 2. Run installer
 ```bash
+cd install
 chmod +x install.sh
 ./install.sh
 ```
@@ -44,6 +45,7 @@ chmod +x install.sh
 
 #### Uninstall
 ```bash
+cd install
 chmod +x uninstall.sh
 ./uninstall.sh
 ```
