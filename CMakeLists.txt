@@ -29,6 +29,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(base64)
 
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(CPR_FORCE_USE_SYSTEM_CURL OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(cpr
         GIT_REPOSITORY https://github.com/libcpr/cpr.git
         GIT_TAG c492b4fed1fd7288eacec6fe8d89e37df78d373a
