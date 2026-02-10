@@ -12,7 +12,7 @@ A command-line tool for Microsoft Teams check-in automation.
 - Internet connection (for downloading dependencies)
 
 **Note:** All dependencies (CLI11, base64, CPR/libcurl) are automatically downloaded by CMake during the build process.
-**Note:** School Wi-Fi may block the downloads for these dependecies.
+**Note:** School Wi-Fi may block the downloads for these dependencies.
 
 
 ### Platform-Specific Requirements
