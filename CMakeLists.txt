@@ -40,8 +40,6 @@ add_executable(
         src/main.cpp
         include/TeamsClient.h
         src/TeamsClient.cpp
-        include/curl_wrappers/CurlHandle.h
-        include/curl_wrappers/CurlHeaders.h
 )
 
 set_target_properties(STRSTeamsCheckIn PROPERTIES OUTPUT_NAME checkin)
