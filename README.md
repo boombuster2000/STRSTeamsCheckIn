@@ -2,25 +2,31 @@
 
 A command-line tool for Microsoft Teams check-in automation.
 
+---
 ## Prerequisites
 
 ### All Platforms
 - CMake 3.20 or higher
 - C++20 compatible compiler
 - Git
+- Internet connection (for downloading dependencies)
+
+**Note:** All dependencies (CLI11, base64, CPR/libcurl) are automatically downloaded by CMake during the build process.
+**Note:** School Wi-Fi may block the downloads for these dependecies.
+
 
 ### Platform-Specific Requirements
 
 #### Linux
 ```bash
 # Debian/Ubuntu
-sudo apt-get install build-essential cmake libcurl4-openssl-dev
+sudo apt-get install build-essential cmake git
 
 # Fedora/RHEL
-sudo dnf install gcc-c++ cmake libcurl-devel
+sudo dnf install gcc-c++ cmake git
 
 # Arch Linux
-sudo pacman -S base-devel cmake curl
+sudo pacman -S base-devel cmake git
 ```
 
 #### macOS
@@ -29,29 +35,21 @@ sudo pacman -S base-devel cmake curl
 xcode-select --install
 
 # Install CMake (using Homebrew)
-brew install cmake curl
+brew install cmake
 ```
 
 #### Windows
 - Visual Studio 2019 or later (with C++ desktop development workload)
-- CMake (download from https://cmake.org/download/)
-- CURL library (can be installed via vcpkg)
-
-**Using vcpkg for CURL on Windows:**
-```powershell
-git clone https://github.com/Microsoft/vcpkg.git
-cd vcpkg
-.\bootstrap-vcpkg.bat
-.\vcpkg install curl:x64-windows
-```
-
+- CMake
+- Git for Windows
+---
 ## Building
 
 ### Linux/macOS
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/boombuster2000/STRSTeamsCheckIn.git
 cd STRSTeamsCheckIn
 
 # Configure the build
@@ -67,13 +65,10 @@ cmake --build build
 
 ```powershell
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/boombuster2000/STRSTeamsCheckIn.git
 cd STRSTeamsCheckIn
 
-# If using vcpkg, specify the toolchain file
-cmake -B build -DCMAKE_TOOLCHAIN_FILE="path/to/vcpkg/scripts/buildsystems/vcpkg.cmake"
-
-# Or without vcpkg (if CURL is installed system-wide)
+# Configure the build
 cmake -B build
 
 # Build
@@ -81,6 +76,7 @@ cmake --build build --config Release
 
 # The executable will be at: build\Release\checkin.exe
 ```
+---
 
 ## Installation
 
@@ -126,46 +122,14 @@ Add to your user PATH:
 ```bash
 cmake --install build --prefix /path/to/custom/location
 ```
-
+---
 ## Usage
 
 After installation, run:
 ```bash
 checkin --help
 ```
-
-## Troubleshooting
-
-### CURL not found
-- **Linux**: Install `libcurl4-openssl-dev` or `libcurl-devel`
-- **macOS**: Install via `brew install curl`
-- **Windows**: Use vcpkg or download from https://curl.se/windows/
-
-### CMake version too old
-Download the latest CMake from https://cmake.org/download/
-
-### Compiler doesn't support C++20
-- **Linux**: Install GCC 10+ or Clang 10+
-- **macOS**: Update Xcode Command Line Tools
-- **Windows**: Use Visual Studio 2019 16.11+ or Visual Studio 2022
-
-## Build Options
-
-### Debug Build
-```bash
-cmake -B build -DCMAKE_BUILD_TYPE=Debug
-cmake --build build
-```
-
-### Specify Compiler
-```bash
-# Use Clang
-cmake -B build -DCMAKE_CXX_COMPILER=clang++
-
-# Use specific GCC version
-cmake -B build -DCMAKE_CXX_COMPILER=g++-11
-```
-
+---
 ## Uninstalling
 
 If you kept track of the install prefix:
@@ -181,3 +145,7 @@ Or use CMake's install manifest:
 ```bash
 cat build/install_manifest.txt | sudo xargs rm
 ```
+---
+## Disclaimer
+
+This project and its contents are not affiliated with, funded, authorized, endorsed by, or in any way associated with Sir Thomas Rich's School, Microsoft, or any of its affiliates and subsidiaries.
