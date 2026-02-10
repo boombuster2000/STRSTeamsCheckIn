@@ -29,10 +29,11 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(base64)
 
-# Find the CURL package
 include(FetchContent)
-FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/libcpr/cpr.git
-        GIT_TAG c492b4fed1fd7288eacec6fe8d89e37df78d373a) # Replace with your desired git commit from: https://github.com/libcpr/cpr/releases
+FetchContent_Declare(cpr
+        GIT_REPOSITORY https://github.com/libcpr/cpr.git
+        GIT_TAG c492b4fed1fd7288eacec6fe8d89e37df78d373a
+)
 FetchContent_MakeAvailable(cpr)
 
 add_executable(
@@ -50,7 +51,6 @@ target_include_directories(
         ${PROJECT_SOURCE_DIR}/include
 )
 
-# Link CURL library
 target_link_libraries(
         STRSTeamsCheckIn
         PRIVATE
