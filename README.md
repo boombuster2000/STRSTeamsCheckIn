@@ -44,33 +44,28 @@ brew install cmake
 
 ## Building
 
+**Download the latest stable release from:** https://github.com/boombuster2000/STRSTeamsCheckIn/releases
+
 ### Linux/macOS
-
 ```bash
-# Clone the repository
-git clone https://github.com/boombuster2000/STRSTeamsCheckIn.git
-cd STRSTeamsCheckIn
+# Extract the downloaded source code
+tar -xzf STRSTeamsCheckIn-*.tar.gz
+cd STRSTeamsCheckIn-*
 
-# Configure the build
+# Configure and build
 cmake -B build -DCMAKE_BUILD_TYPE=Release
-
-# Build
 cmake --build build
 
 # The executable will be at: build/checkin
 ```
 
 ### Windows (Visual Studio)
-
 ```powershell
-# Clone the repository
-git clone https://github.com/boombuster2000/STRSTeamsCheckIn.git
-cd STRSTeamsCheckIn
+# Extract the downloaded zip file
+# Navigate to the extracted folder in PowerShell
 
-# Configure the build
+# Configure and build
 cmake -B build
-
-# Build
 cmake --build build --config Release
 
 # The executable will be at: build\Release\checkin.exe
