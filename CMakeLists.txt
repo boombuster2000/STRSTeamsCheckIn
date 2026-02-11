@@ -10,6 +10,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 set(FETCHCONTENT_BASE_DIR
         ${CMAKE_SOURCE_DIR}/.cmake_cache
         CACHE PATH "FetchContent base directory"
@@ -29,8 +32,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(base64)
 
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-set(CPR_FORCE_USE_SYSTEM_CURL OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(cpr
         GIT_REPOSITORY https://github.com/libcpr/cpr.git
         GIT_TAG c492b4fed1fd7288eacec6fe8d89e37df78d373a
@@ -60,7 +61,7 @@ target_link_libraries(
         cpr::cpr
 )
 
-install(
-        TARGETS STRSTeamsCheckIn
+install(TARGETS STRSTeamsCheckIn cpr
         RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
 )
